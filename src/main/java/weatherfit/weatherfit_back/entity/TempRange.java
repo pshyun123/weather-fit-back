@@ -1,4 +1,4 @@
 package weatherfit.weatherfit_back.entity;
 
-public class UserEntity {
+public class TempRange {
 }

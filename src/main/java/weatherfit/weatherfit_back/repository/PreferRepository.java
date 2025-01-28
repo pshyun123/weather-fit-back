@@ -1,4 +1,4 @@
 package weatherfit.weatherfit_back.repository;
 
-public class PreferRepository {
+public interface PreferRepository {
 }
