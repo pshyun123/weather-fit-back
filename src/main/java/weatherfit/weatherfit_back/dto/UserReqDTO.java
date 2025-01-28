@@ -2,7 +2,7 @@ package weatherfit.weatherfit_back.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import weatherfit.weatherfit_back.entity.User;
+
 
 @Getter
 @Setter

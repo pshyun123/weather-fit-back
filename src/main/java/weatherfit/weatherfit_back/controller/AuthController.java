@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import weatherfit.weatherfit_back.service.AuthService;
+import weatherfit.weatherfit_back.dto.UserResDTO;
+import weatherfit.weatherfit_back.dto.UserReqDTO;
 
 @RestController
 @RequestMapping("/auth")
@@ -24,8 +27,8 @@ public class AuthController {
 
     // Member 회원가입
     @PostMapping("/join")
-    public ResponseEntity<UserResDto> join(@RequestBody UserReqDto userReqDto) {
-        return ResponseEntity.ok(authService.join(userReqDto));
+    public ResponseEntity<UserResDTO> join(@RequestBody UserReqDTO userReqDTO) {
+        return ResponseEntity.ok(authService.join(userReqDTO));
     }
 
 
