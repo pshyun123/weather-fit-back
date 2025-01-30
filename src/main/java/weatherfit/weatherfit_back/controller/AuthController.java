@@ -35,9 +35,8 @@ public class AuthController {
 
        // 네이버 인증 로직 추가
        if (email.endsWith("@naver.com")) {
-           // 네이버 이메일 인증 코드 전송 로직
            try {
-               emailService.sendEmail(email, "WeatherFit 회원가입 인증 코드", "인증 코드: " + verificationCode);
+               emailService.sendEmailByNaver(email, "WeatherFit 회원가입 인증 코드", "인증 코드: " + verificationCode);
                return ResponseEntity.ok(verificationCode);
            } catch (Exception e) {
                return ResponseEntity.internalServerError().body("이메일 전송에 실패했습니다.");
@@ -52,6 +51,19 @@ public class AuthController {
            return ResponseEntity.internalServerError().body("이메일 전송에 실패했습니다.");
        }
     }
+
+      //인증코드와 입력한 인증코드 일치하는지 확인
+      @PostMapping("/email/check")
+      public ResponseEntity<Boolean> verifyCode(@RequestBody Map<String, String> request) {
+          String email = request.get("email");
+          String code = request.get("code");
+          
+          if (email == null || code == null) {
+              return ResponseEntity.badRequest().body(false);
+          }
+          
+          return ResponseEntity.ok(emailService.verifyCode(email, code));
+      }
 
 
     //user 이메일 중복체크
