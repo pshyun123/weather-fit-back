@@ -7,6 +7,7 @@ import weatherfit.weatherfit_back.dto.UserReqDTO;
 import weatherfit.weatherfit_back.dto.UserResDTO;
 import weatherfit.weatherfit_back.entity.User;
 import weatherfit.weatherfit_back.repository.UserRepository;
+import weatherfit.weatherfit_back.constant.Authority;
 
 @Service
 @RequiredArgsConstructor
@@ -32,13 +33,22 @@ public class AuthService {
             throw new RuntimeException("이미 가입되어 있는 유저입니다.");
         }
 
-        User user = new User();
-        user.setEmail(userReqDTO.getEmail());
-        user.setPassword(userReqDTO.getPassword());
-        user.setName(userReqDTO.getName());
-        user.setAgeGroup(userReqDTO.getAgeGroup());
-        user.setProfileImage(userReqDTO.getProfileImage());
+        if (userReqDTO.getProfileImage() == null || userReqDTO.getProfileImage().trim().isEmpty()) {
+            throw new RuntimeException("프로필 이미지는 필수 입력값입니다.");
+        }
+
+        User user = User.builder()
+            .email(userReqDTO.getEmail())
+            .password(userReqDTO.getPassword())
+            .name(userReqDTO.getName())
+            .ageGroup(userReqDTO.getAgeGroup())
+            .profileImage(userReqDTO.getProfileImage())
+            .authority(Authority.ROLE_USER)
+            .isDeleted(false)
+            .build();
 
         return UserResDTO.of(userRepository.save(user));
     }
+
+
 }
