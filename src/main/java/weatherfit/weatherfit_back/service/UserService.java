@@ -13,6 +13,8 @@ import weatherfit.weatherfit_back.repository.UserRepository;
 public class UserService {
     private final UserRepository userRepository;
 
+
+    //회원 정보 수정정
     public void updateUser(UserReqDTO userReqDTO) {
         User user = userRepository.findByEmail(userReqDTO.getEmail())
             .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
@@ -25,12 +27,19 @@ public class UserService {
         userRepository.save(user);
     }
 
-
+    //회원 탈퇴
     public String deleteUser(String email) {
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
         userRepository.delete(user);
     
         return "정상적으로 탈퇴되었습니다.";
+    }
+
+    //비밀번호 조회
+    public String getPassword(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("해당 계정이 존재하지 않습니다."));
+        return user.getPassword();
     }
 }

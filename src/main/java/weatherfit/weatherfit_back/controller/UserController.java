@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import weatherfit.weatherfit_back.service.UserService;
 import weatherfit.weatherfit_back.dto.UserReqDTO;
@@ -33,5 +34,12 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@RequestParam String email) {
         String result = userService.deleteUser(email);
         return ResponseEntity.ok(result);
+    }
+
+    //비밀전호 조회
+    @GetMapping("/password")
+    public ResponseEntity<String> getPassword(@RequestParam String email) {
+        String password = userService.getPassword(email);
+        return ResponseEntity.ok(password);
     }
 }
