@@ -36,10 +36,26 @@ public class UserController {
         return ResponseEntity.ok(result);
     }
 
-    //비밀전호 조회
+    //비밀번호 조회
     @GetMapping("/password")
     public ResponseEntity<String> getPassword(@RequestParam String email) {
         String password = userService.getPassword(email);
         return ResponseEntity.ok(password);
     }
+
+    //좋아요 추가
+    @PostMapping("/like/add")
+    public ResponseEntity<String> addLike(@RequestBody Long userId, @RequestBody Long coordinateId) {
+        userService.addLike(userId, coordinateId);
+        return ResponseEntity.ok("좋아요 추가 완료");
+    }
+
+    //좋아요 삭제
+    @DeleteMapping("/like/delete")
+    public ResponseEntity<String> deleteLike(@RequestBody Long userId, @RequestBody Long coordinateId) {
+        userService.deleteLike(userId, coordinateId);
+        return ResponseEntity.ok("좋아요 삭제 완료");
+    }
+
+
 }
