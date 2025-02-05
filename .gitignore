@@ -33,7 +33,5 @@ out/
 /nbdist/
 /.nb-gradle/
 
-### VS Code ###
-.vscode/
-application.properties
-src/main/java/weatherfit/weatherfit_back/config/EmailConfig.java
+
+
