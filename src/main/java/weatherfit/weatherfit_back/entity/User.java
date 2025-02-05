@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import java.util.List;
 import lombok.NoArgsConstructor;
 import weatherfit.weatherfit_back.constant.Authority;
 
@@ -37,13 +36,7 @@ public class User {
     @Column(name = "is_deleted",columnDefinition = "TINYINT(1)" ,nullable = false)
     private boolean isDeleted;
 
-    @ManyToMany
-    @JoinTable(
-        name = "user_liked_coordinates",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "coordinate_id")
-    )
-    private List<Coordinate> likedCoordinates;
+
 
     @Builder
     public User(String email, String password, String name, String profileImage, String ageGroup, Authority authority, boolean isDeleted) {

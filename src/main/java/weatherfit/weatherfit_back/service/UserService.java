@@ -6,8 +6,10 @@ import org.springframework.transaction.annotation.Transactional;
 import weatherfit.weatherfit_back.dto.UserReqDTO;
 import weatherfit.weatherfit_back.entity.User;
 import weatherfit.weatherfit_back.entity.Coordinate;
+import weatherfit.weatherfit_back.entity.Like;
 import weatherfit.weatherfit_back.repository.UserRepository;
 import weatherfit.weatherfit_back.repository.CoordinateRepository;
+import weatherfit.weatherfit_back.repository.LikeRepository;
 
 
 @Service
@@ -16,6 +18,7 @@ import weatherfit.weatherfit_back.repository.CoordinateRepository;
 public class UserService {
     private final UserRepository userRepository;
     private final CoordinateRepository coordinateRepository;
+    private final LikeRepository likeRepository;
 
 
     //회원 정보 수정정
@@ -52,10 +55,19 @@ public class UserService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
         Coordinate coordinate = coordinateRepository.findById(coordinateId)
-            .orElseThrow(() -> new RuntimeException("해당 착장 정보를를 찾을 수 없습니다."));
+            .orElseThrow(() -> new RuntimeException("해당 착장 정보를 찾을 수 없습니다."));
         
-        user.getLikedCoordinates().add(coordinate);  // 사용자의 좋아요 목록에 추가
-        userRepository.save(user);
+        // 이미 좋아요가 있는지 확인
+        if (likeRepository.existsByUserAndCoordinate(user, coordinate)) {
+            throw new RuntimeException("이미 좋아요한 착장입니다.");
+        }
+
+        Like like = Like.builder()
+            .user(user)
+            .coordinate(coordinate)
+            .build();
+        
+        likeRepository.save(like);
     }
 
     //좋아요 삭제
@@ -63,9 +75,11 @@ public class UserService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
         Coordinate coordinate = coordinateRepository.findById(coordinateId)
-            .orElseThrow(() -> new RuntimeException("해당 착장 정보를를 찾을 수 없습니다."));
+            .orElseThrow(() -> new RuntimeException("해당 착장 정보를 찾을 수 없습니다."));
         
-        user.getLikedCoordinates().remove(coordinate);  // 사용자의 좋아요 목록에서 제거
-        userRepository.save(user);
+        Like like = likeRepository.findByUserAndCoordinate(user, coordinate)
+            .orElseThrow(() -> new RuntimeException("좋아요를 찾을 수 없습니다."));
+        
+        likeRepository.delete(like);
     }
 }
