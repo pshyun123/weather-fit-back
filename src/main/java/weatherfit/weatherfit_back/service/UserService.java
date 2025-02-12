@@ -10,7 +10,11 @@ import weatherfit.weatherfit_back.entity.Like;
 import weatherfit.weatherfit_back.repository.UserRepository;
 import weatherfit.weatherfit_back.repository.CoordinateRepository;
 import weatherfit.weatherfit_back.repository.LikeRepository;
+import weatherfit.weatherfit_back.dto.UserResDTO;
 
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -81,5 +85,13 @@ public class UserService {
             .orElseThrow(() -> new RuntimeException("좋아요를 찾을 수 없습니다."));
         
         likeRepository.delete(like);
+    }
+
+    //회원 리스트 불러오기
+    public List<UserResDTO> getUserList() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+            .map(UserResDTO::of)
+            .collect(Collectors.toList());
     }
 }
