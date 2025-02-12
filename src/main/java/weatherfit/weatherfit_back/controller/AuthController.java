@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.Map;
 import java.util.Random;
@@ -18,12 +19,14 @@ import weatherfit.weatherfit_back.service.EmailService;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class AuthController {
     private final AuthService authService;
     private final EmailService emailService;
 
    //인증용 이메일 인증 코드 전송
    @PostMapping("/email/verify")
+   @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
    public ResponseEntity<String> sendVerificationEmail(@RequestBody Map<String, String> request) {
        String email = request.get("email");
        if (email == null || email.isEmpty()) {
@@ -54,6 +57,7 @@ public class AuthController {
 
       //인증코드와 입력한 인증코드 일치하는지 확인
       @PostMapping("/email/check")
+      @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
       public ResponseEntity<Boolean> verifyCode(@RequestBody Map<String, String> request) {
           String email = request.get("email");
           String code = request.get("code");
