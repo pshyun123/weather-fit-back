@@ -79,5 +79,17 @@ public class AuthController {
         return ResponseEntity.ok(authService.join(userReqDTO));
     }
 
+    // user 로그인
+    @PostMapping("/login")
+    public ResponseEntity<UserResDTO> login(@RequestBody UserReqDTO userReqDTO) {
+        return ResponseEntity.ok(authService.login(userReqDTO));
+    }
+
+    // user 로그아웃
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        authService.logout();
+        return ResponseEntity.ok().build();
+    }
 
 }

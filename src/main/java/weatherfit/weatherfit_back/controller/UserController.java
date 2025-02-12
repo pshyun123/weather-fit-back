@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import java.util.List;
+
 import weatherfit.weatherfit_back.service.UserService;
 import weatherfit.weatherfit_back.dto.UserReqDTO;
+import weatherfit.weatherfit_back.dto.UserResDTO;
 
 @RestController
 @Slf4j
@@ -21,6 +24,14 @@ import weatherfit.weatherfit_back.dto.UserReqDTO;
 public class UserController {
 
     private final UserService userService;
+
+
+    //회원 리스트 불러오기
+    @GetMapping("/list")
+    public ResponseEntity<List<UserResDTO>> getUserList() {
+        List<UserResDTO> userList = userService.getUserList();
+        return ResponseEntity.ok(userList);
+    }
 
     //회원 정보 수정
     @PostMapping("/update")
