@@ -1,12 +1,16 @@
 package weatherfit.weatherfit_back.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 import java.util.Random;
@@ -72,6 +76,7 @@ public class AuthController {
 
     //user 이메일 중복체크
     @PostMapping("/isunique")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     public ResponseEntity<Boolean> isUnique(@RequestBody Map<String, String> dataMap) {
         int type = Integer.parseInt(dataMap.get("type"));
         return ResponseEntity.ok(authService.checkUnique(type,dataMap.get("data")));
@@ -79,18 +84,38 @@ public class AuthController {
 
     // user 회원가입
     @PostMapping("/join")
-    public ResponseEntity<UserResDTO> join(@RequestBody UserReqDTO userReqDTO) {
-        return ResponseEntity.ok(authService.join(userReqDTO));
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    public ResponseEntity<UserResDTO> join(
+        @RequestPart("profileImage") MultipartFile profileImage,
+        @RequestPart("userData") UserReqDTO userReqDTO
+    ) {
+        try {
+            // 이미지 파일 처리 로직
+            String fileName = profileImage.getOriginalFilename();
+            String fileUrl = "uploads/" + fileName; // 실제 저장 경로로 수정 필요
+            
+            // 이미지 저장 로직 추가 필요
+            // profileImage.transferTo(new File(fileUrl));
+            
+            // UserReqDTO에 이미지 URL 설정
+            userReqDTO.setProfileImage(fileUrl);
+            
+            return ResponseEntity.ok(authService.join(userReqDTO));
+        } catch (Exception e) {
+            throw new RuntimeException("파일 업로드 실패: " + e.getMessage());
+        }
     }
 
     // user 로그인
     @PostMapping("/login")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     public ResponseEntity<UserResDTO> login(@RequestBody UserReqDTO userReqDTO) {
         return ResponseEntity.ok(authService.login(userReqDTO));
     }
 
     // user 로그아웃
     @PostMapping("/logout")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     public ResponseEntity<Void> logout() {
         authService.logout();
         return ResponseEntity.ok().build();
