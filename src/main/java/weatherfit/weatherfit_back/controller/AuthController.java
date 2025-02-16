@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.HttpStatus;
 
 import java.util.Map;
 import java.util.Random;
@@ -117,16 +118,23 @@ public class AuthController {
     @PostMapping("/login")
     @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     public ResponseEntity<Map<String, Object>> login(@RequestBody UserReqDTO userReqDTO) {
-        UserResDTO userResDTO = authService.login(userReqDTO);
-        
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("email", userResDTO.getEmail());
-        response.put("name", userResDTO.getName());
-        response.put("ageGroup", userResDTO.getAgeGroup());
-        response.put("profileImage", userResDTO.getProfileImage());  // 앞의 / 제거
-        
-        return ResponseEntity.ok(response);
+        try {
+            UserResDTO userResDTO = authService.login(userReqDTO);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("email", userResDTO.getEmail());
+            response.put("name", userResDTO.getName());
+            response.put("ageGroup", userResDTO.getAgeGroup());
+            response.put("profileImage", userResDTO.getProfileImage());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
 
     // user 로그아웃

@@ -32,9 +32,10 @@ public class SecurityConfig {
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/auth/**", "/uploads/**").permitAll()
                 .anyRequest().permitAll()
-            );
+            )
+            .httpBasic(AbstractHttpConfigurer::disable);
             
         return http.build();
     }
