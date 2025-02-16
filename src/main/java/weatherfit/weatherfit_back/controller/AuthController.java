@@ -1,9 +1,10 @@
 package weatherfit.weatherfit_back.controller;
 
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -13,12 +14,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 import java.util.Random;
-
+import java.util.HashMap;
+import java.io.File;
 
 import weatherfit.weatherfit_back.service.AuthService;
 import weatherfit.weatherfit_back.dto.UserResDTO;
 import weatherfit.weatherfit_back.dto.UserReqDTO;
 import weatherfit.weatherfit_back.service.EmailService;
+import jakarta.servlet.http.HttpSession;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -26,6 +30,9 @@ import weatherfit.weatherfit_back.service.EmailService;
 public class AuthController {
     private final AuthService authService;
     private final EmailService emailService;
+    private final HttpSession session;
+    @Value("${server.url}")
+    private String serverUrl;
 
    //인증용 이메일 인증 코드 전송
    @PostMapping("/email/verify")
@@ -89,15 +96,16 @@ public class AuthController {
         @RequestPart("userData") UserReqDTO userReqDTO
     ) {
         try {
-            // 이미지 파일 처리 로직
-            String fileName = profileImage.getOriginalFilename();
-            String fileUrl = "uploads/" + fileName; // 실제 저장 경로로 수정 필요
+            String fileName = System.currentTimeMillis() + "_" + profileImage.getOriginalFilename();
+            File uploadDir = new File("uploads");
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
             
-            // 이미지 저장 로직 추가 필요
-            // profileImage.transferTo(new File(fileUrl));
+            File dest = new File(uploadDir, fileName);
+            profileImage.transferTo(dest);
             
-            // UserReqDTO에 이미지 URL 설정
-            userReqDTO.setProfileImage(fileUrl);
+            userReqDTO.setProfileImage("/uploads/" + fileName);
             
             return ResponseEntity.ok(authService.join(userReqDTO));
         } catch (Exception e) {
@@ -108,8 +116,17 @@ public class AuthController {
     // user 로그인
     @PostMapping("/login")
     @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
-    public ResponseEntity<UserResDTO> login(@RequestBody UserReqDTO userReqDTO) {
-        return ResponseEntity.ok(authService.login(userReqDTO));
+    public ResponseEntity<Map<String, Object>> login(@RequestBody UserReqDTO userReqDTO) {
+        UserResDTO userResDTO = authService.login(userReqDTO);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("email", userResDTO.getEmail());
+        response.put("name", userResDTO.getName());
+        response.put("ageGroup", userResDTO.getAgeGroup());
+        response.put("profileImage", userResDTO.getProfileImage());  // 앞의 / 제거
+        
+        return ResponseEntity.ok(response);
     }
 
     // user 로그아웃
@@ -119,5 +136,30 @@ public class AuthController {
         authService.logout();
         return ResponseEntity.ok().build();
     }
+
+    // 로그인 정보 확인
+    @GetMapping("/login/check")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    public ResponseEntity<Map<String, Object>> checkLogin() {
+        Map<String, Object> response = new HashMap<>();
+        boolean isLoggedIn = authService.isLoggedIn();
+        
+        response.put("success", isLoggedIn);
+        if (isLoggedIn) {
+            response.put("profileImage", session.getAttribute("USER_PROFILEIMAGE"));
+            response.put("name", session.getAttribute("USER_NAME"));
+            response.put("ageGroup", session.getAttribute("USER_AGEGROUP"));
+            response.put("email", session.getAttribute("USER_EMAIL"));
+            
+        } else {
+            response.put("profileImage", null);
+            response.put("name", null);
+            response.put("ageGroup", null);
+            response.put("email", null);
+        }
+        
+        return ResponseEntity.ok(response);
+    }
+
 
 }
