@@ -25,7 +25,7 @@ public class User {
     private String password;
     @Column(name = "name", nullable = false)
     private String name;
-    @Column(name = "profileImage", nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'default.jpg'")
+    @Column(name = "profileImage", nullable = false, length = 100000)
     private String profileImage;
     @Column(name = "ageGroup", nullable = false)
     private String ageGroup;
@@ -35,8 +35,6 @@ public class User {
 
     @Column(name = "is_deleted",columnDefinition = "TINYINT(1)" ,nullable = false)
     private boolean isDeleted;
-
-
 
     @Builder
     public User(String email, String password, String name, String profileImage, String ageGroup, Authority authority, boolean isDeleted) {

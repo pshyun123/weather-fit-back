@@ -1,21 +1,29 @@
 package weatherfit.weatherfit_back.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.HttpStatus;
 
 import java.util.Map;
 import java.util.Random;
-
+import java.util.HashMap;
+import java.io.File;
 
 import weatherfit.weatherfit_back.service.AuthService;
 import weatherfit.weatherfit_back.dto.UserResDTO;
 import weatherfit.weatherfit_back.dto.UserReqDTO;
 import weatherfit.weatherfit_back.service.EmailService;
+import jakarta.servlet.http.HttpSession;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -23,6 +31,9 @@ import weatherfit.weatherfit_back.service.EmailService;
 public class AuthController {
     private final AuthService authService;
     private final EmailService emailService;
+    private final HttpSession session;
+    @Value("${server.url}")
+    private String serverUrl;
 
    //인증용 이메일 인증 코드 전송
    @PostMapping("/email/verify")
@@ -72,6 +83,7 @@ public class AuthController {
 
     //user 이메일 중복체크
     @PostMapping("/isunique")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     public ResponseEntity<Boolean> isUnique(@RequestBody Map<String, String> dataMap) {
         int type = Integer.parseInt(dataMap.get("type"));
         return ResponseEntity.ok(authService.checkUnique(type,dataMap.get("data")));
@@ -79,21 +91,83 @@ public class AuthController {
 
     // user 회원가입
     @PostMapping("/join")
-    public ResponseEntity<UserResDTO> join(@RequestBody UserReqDTO userReqDTO) {
-        return ResponseEntity.ok(authService.join(userReqDTO));
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    public ResponseEntity<UserResDTO> join(
+        @RequestPart("profileImage") MultipartFile profileImage,
+        @RequestPart("userData") UserReqDTO userReqDTO
+    ) {
+        try {
+            String fileName = System.currentTimeMillis() + "_" + profileImage.getOriginalFilename();
+            File uploadDir = new File("uploads");
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+            
+            File dest = new File(uploadDir, fileName);
+            profileImage.transferTo(dest);
+            
+            userReqDTO.setProfileImage("/uploads/" + fileName);
+            
+            return ResponseEntity.ok(authService.join(userReqDTO));
+        } catch (Exception e) {
+            throw new RuntimeException("파일 업로드 실패: " + e.getMessage());
+        }
     }
 
     // user 로그인
     @PostMapping("/login")
-    public ResponseEntity<UserResDTO> login(@RequestBody UserReqDTO userReqDTO) {
-        return ResponseEntity.ok(authService.login(userReqDTO));
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    public ResponseEntity<Map<String, Object>> login(@RequestBody UserReqDTO userReqDTO) {
+        try {
+            UserResDTO userResDTO = authService.login(userReqDTO);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("email", userResDTO.getEmail());
+            response.put("name", userResDTO.getName());
+            response.put("ageGroup", userResDTO.getAgeGroup());
+            response.put("profileImage", userResDTO.getProfileImage());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
 
     // user 로그아웃
     @PostMapping("/logout")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     public ResponseEntity<Void> logout() {
         authService.logout();
         return ResponseEntity.ok().build();
     }
+
+    // 로그인 정보 확인
+    @GetMapping("/login/check")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    public ResponseEntity<Map<String, Object>> checkLogin() {
+        Map<String, Object> response = new HashMap<>();
+        boolean isLoggedIn = authService.isLoggedIn();
+        
+        response.put("success", isLoggedIn);
+        if (isLoggedIn) {
+            response.put("profileImage", session.getAttribute("USER_PROFILEIMAGE"));
+            response.put("name", session.getAttribute("USER_NAME"));
+            response.put("ageGroup", session.getAttribute("USER_AGEGROUP"));
+            response.put("email", session.getAttribute("USER_EMAIL"));
+            
+        } else {
+            response.put("profileImage", null);
+            response.put("name", null);
+            response.put("ageGroup", null);
+            response.put("email", null);
+        }
+        
+        return ResponseEntity.ok(response);
+    }
+
 
 }

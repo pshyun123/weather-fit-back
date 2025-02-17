@@ -64,11 +64,23 @@ public class AuthService {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
 
-        // 세션에 필요한 정보만 저장
+        // 세션에 저장 
         session.setAttribute("USER_ID", user.getId());
         session.setAttribute("USER_EMAIL", user.getEmail());
+        session.setAttribute("USER_NAME", user.getName());
+        session.setAttribute("USER_AGEGROUP", user.getAgeGroup());
+        session.setAttribute("USER_PROFILEIMAGE", user.getProfileImage());
         
         return UserResDTO.of(user);
+    }
+
+    // user 로그인 상태 확인
+    public boolean isLoggedIn() {
+        // 세션에서 이메일, 이름, 나이대, 프로필 이미지를 확인
+        return session.getAttribute("USER_EMAIL") != null &&
+               session.getAttribute("USER_NAME") != null &&
+               session.getAttribute("USER_AGEGROUP") != null &&
+               session.getAttribute("USER_PROFILEIMAGE") != null;
     }
 
     // user 로그아웃
