@@ -38,10 +38,6 @@ public class AuthService {
             throw new RuntimeException("이미 가입되어 있는 유저입니다.");
         }
 
-        if (userReqDTO.getProfileImage() == null || userReqDTO.getProfileImage().trim().isEmpty()) {
-            throw new RuntimeException("프로필 이미지는 필수 입력값입니다.");
-        }
-
         User user = User.builder()
             .email(userReqDTO.getEmail())
             .password(passwordEncoder.encode(userReqDTO.getPassword()))
@@ -64,23 +60,24 @@ public class AuthService {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
 
-        // 세션에 저장 
+        // 세션에 저장 (프로필 이미지는 null일 수 있음)
         session.setAttribute("USER_ID", user.getId());
         session.setAttribute("USER_EMAIL", user.getEmail());
         session.setAttribute("USER_NAME", user.getName());
         session.setAttribute("USER_AGEGROUP", user.getAgeGroup());
-        session.setAttribute("USER_PROFILEIMAGE", user.getProfileImage());
+        session.setAttribute("USER_PROFILEIMAGE", user.getProfileImage());  // null 허용
         
         return UserResDTO.of(user);
     }
 
     // user 로그인 상태 확인
     public boolean isLoggedIn() {
-        // 세션에서 이메일, 이름, 나이대, 프로필 이미지를 확인
-        return session.getAttribute("USER_EMAIL") != null &&
-               session.getAttribute("USER_NAME") != null &&
-               session.getAttribute("USER_AGEGROUP") != null &&
-               session.getAttribute("USER_PROFILEIMAGE") != null;
+        try {
+            // USER_EMAIL만으로 로그인 상태 확인
+            return session.getAttribute("USER_EMAIL") != null;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     // user 로그아웃
