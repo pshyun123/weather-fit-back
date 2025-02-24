@@ -15,4 +15,5 @@ public class UserReqDTO {
     private String name;
     private String ageGroup;
     private String profileImage;
+    private String preference;
 }

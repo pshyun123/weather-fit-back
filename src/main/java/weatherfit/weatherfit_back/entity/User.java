@@ -29,6 +29,8 @@ public class User {
     private String profileImage;
     @Column(name = "ageGroup", nullable = false)
     private String ageGroup;
+    @Column(name= "preference", nullable = false)
+    private String preference;
 
     @Enumerated(EnumType.STRING)
     private Authority authority;
@@ -37,12 +39,13 @@ public class User {
     private boolean isDeleted;
 
     @Builder
-    public User(String email, String password, String name, String profileImage, String ageGroup, Authority authority, boolean isDeleted) {
+    public User(String email, String password, String name, String profileImage, String ageGroup, String preference, Authority authority, boolean isDeleted) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.profileImage = profileImage;
         this.ageGroup = ageGroup;
+        this.preference = preference;
         this.authority = authority != null ? authority : Authority.ROLE_USER;
         this.isDeleted = isDeleted;
     }
