@@ -13,14 +13,16 @@ public class UserResDTO {
     private String email;
     private String name;
     private String ageGroup;
-    private String profileImage;
+    // private String profileImage;
+    private String preferences;
 
     public static UserResDTO of(User user) {
         return UserResDTO.builder()
                 .email(user.getEmail())
                 .name(user.getName())
                 .ageGroup(user.getAgeGroup())
-                .profileImage(user.getProfileImage())
+                // .profileImage(user.getProfileImage())
+                .preferences(user.getPreferences())
                 .build();
     }
 }

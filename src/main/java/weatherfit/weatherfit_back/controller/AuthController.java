@@ -97,23 +97,8 @@ public class AuthController {
     // user 회원가입
     @PostMapping("/join")
     @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
-    public ResponseEntity<UserResDTO> join(
-        @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
-        @RequestPart("userData") UserReqDTO userReqDTO
-    ) {
+    public ResponseEntity<UserResDTO> join(@RequestBody UserReqDTO userReqDTO) {
         try {
-            if (profileImage != null && !profileImage.isEmpty()) {
-                String fileName = System.currentTimeMillis() + "_" + profileImage.getOriginalFilename();
-                File uploadPath = new File(uploadDir);
-                if (!uploadPath.exists()) {
-                    uploadPath.mkdirs();
-                }
-                
-                File dest = new File(uploadPath, fileName);
-                profileImage.transferTo(dest);
-                userReqDTO.setProfileImage("/uploads/" + fileName);
-            }
-            
             return ResponseEntity.ok(authService.join(userReqDTO));
         } catch (Exception e) {
             throw new RuntimeException("회원가입 실패: " + e.getMessage());
@@ -132,8 +117,9 @@ public class AuthController {
             response.put("email", userResDTO.getEmail());
             response.put("name", userResDTO.getName());
             response.put("ageGroup", userResDTO.getAgeGroup());
-            response.put("profileImage", userResDTO.getProfileImage());
-            
+            // response.put("profileImage", userResDTO.getProfileImage());
+            response.put("preferences", userResDTO.getPreferences());
+
             return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, "JSESSIONID=" + session.getId() + "; Path=/; HttpOnly; SameSite=Lax")
                 .body(response);

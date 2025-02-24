@@ -33,7 +33,7 @@ public class UserService {
         // 사용자 정보 업데이트
         user.setName(userReqDTO.getName());
         user.setAgeGroup(userReqDTO.getAgeGroup());
-        user.setProfileImage(userReqDTO.getProfileImage());
+        // user.setProfileImage(userReqDTO.getProfileImage());
         
         userRepository.save(user);
     }
