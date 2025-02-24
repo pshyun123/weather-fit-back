@@ -43,7 +43,7 @@ public class AuthService {
             .password(passwordEncoder.encode(userReqDTO.getPassword()))
             .name(userReqDTO.getName())
             .ageGroup(userReqDTO.getAgeGroup())
-            .profileImage(userReqDTO.getProfileImage())
+            .preferences(userReqDTO.getPreferencesAsString())  // JSON 문자열로 변환하여 저장
             .authority(Authority.ROLE_USER)
             .isDeleted(false)
             .build();
@@ -65,7 +65,7 @@ public class AuthService {
         session.setAttribute("USER_EMAIL", user.getEmail());
         session.setAttribute("USER_NAME", user.getName());
         session.setAttribute("USER_AGEGROUP", user.getAgeGroup());
-        session.setAttribute("USER_PROFILEIMAGE", user.getProfileImage());  // null 허용
+        // session.setAttribute("USER_PROFILEIMAGE", user.getProfileImage());  // null 허용
         
         return UserResDTO.of(user);
     }
