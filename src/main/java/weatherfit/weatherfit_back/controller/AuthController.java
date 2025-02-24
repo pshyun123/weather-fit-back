@@ -7,11 +7,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.http.HttpHeaders;
 
 import java.util.Map;
 import java.util.Random;
@@ -24,6 +26,7 @@ import weatherfit.weatherfit_back.dto.UserReqDTO;
 import weatherfit.weatherfit_back.service.EmailService;
 import jakarta.servlet.http.HttpSession;
 
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -34,6 +37,8 @@ public class AuthController {
     private final HttpSession session;
     @Value("${server.url}")
     private String serverUrl;
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
    //인증용 이메일 인증 코드 전송
    @PostMapping("/email/verify")
@@ -93,24 +98,25 @@ public class AuthController {
     @PostMapping("/join")
     @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     public ResponseEntity<UserResDTO> join(
-        @RequestPart("profileImage") MultipartFile profileImage,
+        @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
         @RequestPart("userData") UserReqDTO userReqDTO
     ) {
         try {
-            String fileName = System.currentTimeMillis() + "_" + profileImage.getOriginalFilename();
-            File uploadDir = new File("uploads");
-            if (!uploadDir.exists()) {
-                uploadDir.mkdirs();
+            if (profileImage != null && !profileImage.isEmpty()) {
+                String fileName = System.currentTimeMillis() + "_" + profileImage.getOriginalFilename();
+                File uploadPath = new File(uploadDir);
+                if (!uploadPath.exists()) {
+                    uploadPath.mkdirs();
+                }
+                
+                File dest = new File(uploadPath, fileName);
+                profileImage.transferTo(dest);
+                userReqDTO.setProfileImage("/uploads/" + fileName);
             }
-            
-            File dest = new File(uploadDir, fileName);
-            profileImage.transferTo(dest);
-            
-            userReqDTO.setProfileImage("/uploads/" + fileName);
             
             return ResponseEntity.ok(authService.join(userReqDTO));
         } catch (Exception e) {
-            throw new RuntimeException("파일 업로드 실패: " + e.getMessage());
+            throw new RuntimeException("회원가입 실패: " + e.getMessage());
         }
     }
 
@@ -128,7 +134,9 @@ public class AuthController {
             response.put("ageGroup", userResDTO.getAgeGroup());
             response.put("profileImage", userResDTO.getProfileImage());
             
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, "JSESSIONID=" + session.getId() + "; Path=/; HttpOnly; SameSite=Lax")
+                .body(response);
         } catch (Exception e) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
@@ -158,15 +166,11 @@ public class AuthController {
             response.put("name", session.getAttribute("USER_NAME"));
             response.put("ageGroup", session.getAttribute("USER_AGEGROUP"));
             response.put("email", session.getAttribute("USER_EMAIL"));
-            
-        } else {
-            response.put("profileImage", null);
-            response.put("name", null);
-            response.put("ageGroup", null);
-            response.put("email", null);
         }
         
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok()
+            .header(HttpHeaders.SET_COOKIE, "JSESSIONID=" + session.getId() + "; Path=/; HttpOnly; SameSite=Lax")
+            .body(response);
     }
 
 

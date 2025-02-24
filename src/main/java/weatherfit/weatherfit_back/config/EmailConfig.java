@@ -33,16 +33,16 @@ public class EmailConfig {
     @Bean
     public JavaMailSender javaMailSenderNaver() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("smtp.naver.com"); // Naver SMTP 서버 주소
-        mailSender.setPort(465); // Naver SMTP 포트
-
-        mailSender.setUsername("ljs2894@naver.com"); // Naver 계정
-        mailSender.setPassword("Lee289473007216!"); // Naver 비밀번호
+        mailSender.setHost("smtp.naver.com");
+        mailSender.setPort(465);
+        mailSender.setUsername("ljs2894@naver.com");
+        mailSender.setPassword("Lee289473007216!");
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.ssl.enable", "true");
+        props.put("mail.smtp.ssl.trust", "smtp.naver.com");
         props.put("mail.debug", "true");
 
         return mailSender;

@@ -25,7 +25,7 @@ public class User {
     private String password;
     @Column(name = "name", nullable = false)
     private String name;
-    @Column(name = "profileImage", nullable = false, length = 100000)
+    @Column(name = "profileImage", nullable = true)
     private String profileImage;
     @Column(name = "ageGroup", nullable = false)
     private String ageGroup;
@@ -41,7 +41,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.name = name;
-        this.profileImage = profileImage != null ? profileImage : "default.jpg";
+        this.profileImage = profileImage;
         this.ageGroup = ageGroup;
         this.authority = authority != null ? authority : Authority.ROLE_USER;
         this.isDeleted = isDeleted;
