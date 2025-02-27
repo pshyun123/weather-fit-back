@@ -10,7 +10,8 @@ import weatherfit.weatherfit_back.repository.UserRepository;
 import weatherfit.weatherfit_back.repository.CoordinateRepository;
 import weatherfit.weatherfit_back.repository.LikeRepository;
 import weatherfit.weatherfit_back.dto.UserResDTO;
-
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,19 +19,35 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final CoordinateRepository coordinateRepository;
     private final LikeRepository likeRepository;
-
+    private final PasswordEncoder passwordEncoder;
 
     //회원 비밀번호 수정.
     public void updatePassword(String email, String newPassword) {
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        user.setPassword(newPassword);
+        
+        // 비밀번호 암호화
+        String encryptedPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(encryptedPassword);
+
+        log.info("비밀번호 수정 결과: 암호화된 비밀번호로 저장됨");
         userRepository.save(user);
     }
+
+    //암호화되어 있는 회원 비밀번호 체크.
+    public boolean verifyPassword(String email, String password) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        // 암호화된 비밀번호와 입력된 평문 비밀번호를 matches() 메서드로 비교
+        return passwordEncoder.matches(password, user.getPassword());
+    }
+    
 
     //회원 프로필 이미지 수정
     public void updateProfileImage(String email, String newProfileImage) {
@@ -50,10 +67,37 @@ public class UserService {
 
     //회원 나이대 수정
     public void updateAgeGroup(String email, String newAgeGroup) {
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        user.setAgeGroup(newAgeGroup);
-        userRepository.save(user);
+        try {
+            log.info("연령대 업데이트 시작: email={}, newAgeGroup={}", email, newAgeGroup);
+            
+            if (email == null || email.isEmpty()) {
+                throw new IllegalArgumentException("이메일이 비어있습니다.");
+            }
+            
+            if (newAgeGroup == null || newAgeGroup.isEmpty()) {
+                throw new IllegalArgumentException("연령대가 비어있습니다.");
+            }
+            
+            User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + email));
+            
+            // 현재 연령대와 동일한 경우 업데이트 불필요
+            if (newAgeGroup.equals(user.getAgeGroup())) {
+                log.info("현재 연령대와 동일하여 업데이트 불필요: email={}, ageGroup={}", email, newAgeGroup);
+                return;
+            }
+            
+            log.info("연령대 업데이트: email={}, 기존 연령대={}, 새 연령대={}", 
+                    email, user.getAgeGroup(), newAgeGroup);
+            
+            user.setAgeGroup(newAgeGroup);
+            userRepository.save(user);
+            
+            log.info("연령대 업데이트 완료: email={}, newAgeGroup={}", email, newAgeGroup);
+        } catch (Exception e) {
+            log.error("연령대 업데이트 중 오류 발생: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     //회원 탈퇴
@@ -74,35 +118,68 @@ public class UserService {
 
     //좋아요 추가
     public void addLike(Long userId, Long coordinateId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        Coordinate coordinate = coordinateRepository.findById(coordinateId)
-            .orElseThrow(() -> new RuntimeException("해당 착장 정보를 찾을 수 없습니다."));
-        
-        // 이미 좋아요가 있는지 확인
-        if (likeRepository.existsByUserAndCoordinate(user, coordinate)) {
-            throw new RuntimeException("이미 좋아요한 착장입니다.");
-        }
+        try {
+            log.info("좋아요 추가 시작: userId={}, coordinateId={}", userId, coordinateId);
+            
+            if (userId == null) {
+                throw new IllegalArgumentException("사용자 ID가 비어있습니다.");
+            }
+            
+            if (coordinateId == null) {
+                throw new IllegalArgumentException("착장 ID가 비어있습니다.");
+            }
+            
+            User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + userId));
+            Coordinate coordinate = coordinateRepository.findById(coordinateId)
+                .orElseThrow(() -> new RuntimeException("해당 착장 정보를 찾을 수 없습니다: " + coordinateId));
+            
+            // 이미 좋아요가 있는지 확인
+            if (likeRepository.existsByUserAndCoordinate(user, coordinate)) {
+                log.info("이미 좋아요한 착장입니다: userId={}, coordinateId={}", userId, coordinateId);
+                throw new RuntimeException("이미 좋아요한 착장입니다.");
+            }
 
-        Like like = Like.builder()
-            .user(user)
-            .coordinate(coordinate)
-            .build();
-        
-        likeRepository.save(like);
+            Like like = Like.builder()
+                .user(user)
+                .coordinate(coordinate)
+                .build();
+            
+            likeRepository.save(like);
+            log.info("좋아요 추가 완료: userId={}, coordinateId={}", userId, coordinateId);
+        } catch (Exception e) {
+            log.error("좋아요 추가 중 오류 발생: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     //좋아요 삭제
     public void deleteLike(Long userId, Long coordinateId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        Coordinate coordinate = coordinateRepository.findById(coordinateId)
-            .orElseThrow(() -> new RuntimeException("해당 착장 정보를 찾을 수 없습니다."));
-        
-        Like like = likeRepository.findByUserAndCoordinate(user, coordinate)
-            .orElseThrow(() -> new RuntimeException("좋아요를 찾을 수 없습니다."));
-        
-        likeRepository.delete(like);
+        try {
+            log.info("좋아요 삭제 시작: userId={}, coordinateId={}", userId, coordinateId);
+            
+            if (userId == null) {
+                throw new IllegalArgumentException("사용자 ID가 비어있습니다.");
+            }
+            
+            if (coordinateId == null) {
+                throw new IllegalArgumentException("착장 ID가 비어있습니다.");
+            }
+            
+            User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + userId));
+            Coordinate coordinate = coordinateRepository.findById(coordinateId)
+                .orElseThrow(() -> new RuntimeException("해당 착장 정보를 찾을 수 없습니다: " + coordinateId));
+            
+            Like like = likeRepository.findByUserAndCoordinate(user, coordinate)
+                .orElseThrow(() -> new RuntimeException("좋아요를 찾을 수 없습니다."));
+            
+            likeRepository.delete(like);
+            log.info("좋아요 삭제 완료: userId={}, coordinateId={}", userId, coordinateId);
+        } catch (Exception e) {
+            log.error("좋아요 삭제 중 오류 발생: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     //회원 리스트 불러오기

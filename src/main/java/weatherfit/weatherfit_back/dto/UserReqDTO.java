@@ -17,6 +17,7 @@ import java.util.List;
 public class UserReqDTO {
     private String email;
     private String password;
+    private String newPassword;
     private String name;
     private String ageGroup;
     private String profileImage;
@@ -41,4 +42,7 @@ public class UserReqDTO {
             return "[]";  // 기본값 반환
         }
     }
+
+
+    
 }
