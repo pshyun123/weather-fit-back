@@ -12,6 +12,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
+import java.util.Map;
+import java.util.Base64;
+import java.io.File;
+import java.io.FileOutputStream;
+
+import java.util.HashMap;
+import org.springframework.http.HttpStatus;
 
 import weatherfit.weatherfit_back.service.UserService;
 import weatherfit.weatherfit_back.dto.UserReqDTO;
@@ -33,12 +40,72 @@ public class UserController {
         return ResponseEntity.ok(userList);
     }
 
-    //회원 정보 수정
-    @PostMapping("/update")
+    //회원 비밀번호 수정
+    @PostMapping("/update/password")
     public ResponseEntity<Boolean> updateUser(@RequestBody UserReqDTO userReqDTO) {
-        userService.updateUser(userReqDTO);
+        userService.updatePassword(userReqDTO.getEmail(), userReqDTO.getPassword());
+
         return ResponseEntity.ok(true);
     }
+
+    //회원 프로필 이미지 수정
+    @PostMapping("/update/profileImage")
+    public ResponseEntity<Map<String, Object>> updateProfileImage(@RequestBody Map<String, Object> request) {
+        try {
+            String email = (String) request.get("email");
+            String imageBase64 = (String) request.get("profileImage");
+            String fileName = (String) request.get("fileName");
+            
+            // Base64 데이터에서 실제 이미지 데이터 추출 (data:image/jpeg;base64, 부분 제거)
+            String base64Image = imageBase64.split(",")[1];
+            byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+            
+            // 파일 저장
+            String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
+            String uploadPath = "uploads";
+            File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+            
+            File outputFile = new File(uploadDir, uniqueFileName);
+            try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
+                outputStream.write(imageBytes);
+            }
+            
+            // 프로필 이미지 경로 업데이트
+            String profileImagePath = "/uploads/" + uniqueFileName;
+            userService.updateProfileImage(email, profileImagePath);
+            
+            // 응답 데이터 생성
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("profileImage", profileImagePath);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    //회원 취향 수정
+    @PostMapping("/update/preferences")
+    public ResponseEntity<Boolean> updatePreferences(@RequestBody UserReqDTO userReqDTO) {
+        userService.updatePreferences(userReqDTO.getEmail(), userReqDTO.getPreferencesAsString());
+        return ResponseEntity.ok(true);
+    }
+
+    //회원 나이대 수정
+    @PostMapping("/update/ageGroup")
+    public ResponseEntity<Boolean> updateAgeGroup(@RequestBody UserReqDTO userReqDTO) {
+        userService.updateAgeGroup(userReqDTO.getEmail(), userReqDTO.getAgeGroup());
+        return ResponseEntity.ok(true);
+    }
+    
+    
 
     //회원 탈퇴
     @DeleteMapping("/delete")

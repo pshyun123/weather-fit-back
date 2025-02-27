@@ -3,7 +3,6 @@ package weatherfit.weatherfit_back.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import weatherfit.weatherfit_back.dto.UserReqDTO;
 import weatherfit.weatherfit_back.entity.User;
 import weatherfit.weatherfit_back.entity.Coordinate;
 import weatherfit.weatherfit_back.entity.Like;
@@ -25,16 +24,35 @@ public class UserService {
     private final LikeRepository likeRepository;
 
 
-    //회원 정보 수정정
-    public void updateUser(UserReqDTO userReqDTO) {
-        User user = userRepository.findByEmail(userReqDTO.getEmail())
+    //회원 비밀번호 수정.
+    public void updatePassword(String email, String newPassword) {
+        User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        
-        // 사용자 정보 업데이트
-        user.setName(userReqDTO.getName());
-        user.setAgeGroup(userReqDTO.getAgeGroup());
-        // user.setProfileImage(userReqDTO.getProfileImage());
-        
+        user.setPassword(newPassword);
+        userRepository.save(user);
+    }
+
+    //회원 프로필 이미지 수정
+    public void updateProfileImage(String email, String newProfileImage) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        user.setProfileImage(newProfileImage);
+        userRepository.save(user);
+    }
+
+    //회원 취향 수정
+    public void updatePreferences(String email, String newPreferences) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        user.setPreferences(newPreferences);
+        userRepository.save(user);
+    }
+
+    //회원 나이대 수정
+    public void updateAgeGroup(String email, String newAgeGroup) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        user.setAgeGroup(newAgeGroup);
         userRepository.save(user);
     }
 
