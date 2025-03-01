@@ -14,7 +14,6 @@ public class UserResDTO {
     private String password;
     private String name;
     private String ageGroup;
-     private String profileImage;
     private String preferences;
 
     public static UserResDTO of(User user) {
@@ -24,7 +23,6 @@ public class UserResDTO {
                 
                 .name(user.getName())
                 .ageGroup(user.getAgeGroup())
-                .profileImage(user.getProfileImage())
                 .preferences(user.getPreferences())
                 .build();
     }

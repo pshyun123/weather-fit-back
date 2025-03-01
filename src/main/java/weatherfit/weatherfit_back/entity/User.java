@@ -25,8 +25,6 @@ public class User {
     private String password;
     @Column(name = "name", nullable = false)
     private String name;
-    @Column(name = "profileImage", nullable = true)
-     private String profileImage;
     @Column(name = "ageGroup", nullable = false)
     private String ageGroup;
     @Column(name = "preference", columnDefinition = "TEXT")
