@@ -11,7 +11,6 @@ import weatherfit.weatherfit_back.repository.LikeRepository;
 import weatherfit.weatherfit_back.repository.UserRepository;
 import java.util.stream.Collectors;
 import weatherfit.weatherfit_back.dto.CoordinateDTO;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
