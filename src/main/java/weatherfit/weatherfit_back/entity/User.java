@@ -41,7 +41,6 @@ public class User {
         this.email = email;
         this.password = password;
         this.name = name;
-        this.profileImage = profileImage;
         this.ageGroup = ageGroup;
         this.preferences = preferences;
         this.authority = authority != null ? authority : Authority.ROLE_USER;

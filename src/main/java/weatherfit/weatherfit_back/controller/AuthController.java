@@ -117,7 +117,6 @@ public class AuthController {
             response.put("email", userResDTO.getEmail());
             response.put("name", userResDTO.getName());
             response.put("ageGroup", userResDTO.getAgeGroup());
-             response.put("profileImage", userResDTO.getProfileImage());
             response.put("preferences", userResDTO.getPreferences());
 
             return ResponseEntity.ok()
