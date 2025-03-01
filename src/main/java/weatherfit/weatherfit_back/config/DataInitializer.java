@@ -19,10 +19,8 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // 데이터베이스가 비어있을 때만 초기화
-        if (coordinateRepository.count() == 0) {
-            initializeCoordinateData();
-        }
+       //데이터 베이스 내용이 바뀌면, 내용 변경.
+       initializeCoordinateData();
     }
 
     private void initializeCoordinateData() {

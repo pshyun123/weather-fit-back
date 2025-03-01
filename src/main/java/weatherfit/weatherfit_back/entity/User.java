@@ -37,11 +37,11 @@ public class User {
     private boolean isDeleted;
 
     @Builder
-    public User(String email, String password, String name,  String ageGroup, String preferences, Authority authority, boolean isDeleted) {
+    public User(String email, String password, String name, String profileImage, String ageGroup, String preferences, Authority authority, boolean isDeleted) {
         this.email = email;
         this.password = password;
         this.name = name;
-        // this.profileImage = profileImage;
+        this.profileImage = profileImage;
         this.ageGroup = ageGroup;
         this.preferences = preferences;
         this.authority = authority != null ? authority : Authority.ROLE_USER;

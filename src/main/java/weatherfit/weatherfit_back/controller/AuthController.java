@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.multipart.MultipartFile;
+
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestPart;
+
 import org.springframework.http.HttpHeaders;
 
 import java.util.Map;
 import java.util.Random;
 import java.util.HashMap;
-import java.io.File;
+
 
 import weatherfit.weatherfit_back.service.AuthService;
 import weatherfit.weatherfit_back.dto.UserResDTO;
@@ -117,7 +117,7 @@ public class AuthController {
             response.put("email", userResDTO.getEmail());
             response.put("name", userResDTO.getName());
             response.put("ageGroup", userResDTO.getAgeGroup());
-            // response.put("profileImage", userResDTO.getProfileImage());
+             response.put("profileImage", userResDTO.getProfileImage());
             response.put("preferences", userResDTO.getPreferences());
 
             return ResponseEntity.ok()

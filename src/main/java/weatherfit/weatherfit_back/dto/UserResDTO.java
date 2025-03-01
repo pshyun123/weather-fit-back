@@ -11,6 +11,7 @@ import weatherfit.weatherfit_back.entity.User;
 @Builder
 public class UserResDTO {
     private String email;
+    private String password;
     private String name;
     private String ageGroup;
     private String preferences;
@@ -18,6 +19,8 @@ public class UserResDTO {
     public static UserResDTO of(User user) {
         return UserResDTO.builder()
                 .email(user.getEmail())
+                .password(user.getPassword())
+                
                 .name(user.getName())
                 .ageGroup(user.getAgeGroup())
                 .preferences(user.getPreferences())
