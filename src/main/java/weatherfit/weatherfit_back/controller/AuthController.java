@@ -117,7 +117,9 @@ public class AuthController {
             response.put("email", userResDTO.getEmail());
             response.put("name", userResDTO.getName());
             response.put("ageGroup", userResDTO.getAgeGroup());
+             response.put("profileImage", userResDTO.getProfileImage());
             response.put("preferences", userResDTO.getPreferences());
+            response.put("userId", userResDTO.getId());
 
             return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, "JSESSIONID=" + session.getId() + "; Path=/; HttpOnly; SameSite=Lax")
@@ -151,6 +153,8 @@ public class AuthController {
             response.put("name", session.getAttribute("USER_NAME"));
             response.put("ageGroup", session.getAttribute("USER_AGEGROUP"));
             response.put("email", session.getAttribute("USER_EMAIL"));
+            response.put("preferences", session.getAttribute("USER_PREFERENCES"));
+            response.put("userId", session.getAttribute("USER_ID"));
         }
         
         return ResponseEntity.ok()

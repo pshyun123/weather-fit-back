@@ -24,11 +24,13 @@ import org.springframework.http.HttpStatus;
 import weatherfit.weatherfit_back.service.UserService;
 import weatherfit.weatherfit_back.dto.UserReqDTO;
 import weatherfit.weatherfit_back.dto.UserResDTO;
+import weatherfit.weatherfit_back.dto.LikeDTO;
 
 @RestController
 @Slf4j
 @RequestMapping("/member")
 @RequiredArgsConstructor
+
 public class UserController {
 
     private final UserService userService;
@@ -201,6 +203,18 @@ public class UserController {
     //좋아요 추가
     @PostMapping("/like/add")
     @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    @io.swagger.v3.oas.annotations.Operation(
+        summary = "좋아요 추가",
+        description = "사용자가 코디네이트에 좋아요를 추가합니다.",
+        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @io.swagger.v3.oas.annotations.media.Content(
+                mediaType = "application/json",
+                schema = @io.swagger.v3.oas.annotations.media.Schema(
+                    example = "{\"userId\": 1, \"coordinateId\": 212}"
+                )
+            )
+        )
+    )
     public ResponseEntity<String> addLike(@RequestBody Map<String, Long> request) {
         Long userId = request.get("userId");
         Long coordinateId = request.get("coordinateId");
@@ -239,6 +253,267 @@ public class UserController {
                 .body("좋아요 삭제 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
+
+     //여기서부터 좋아요+취향조건.
+
+    //좋아요 한 것들 중 preferences가 미니멀인 것들 조회
+    @GetMapping("/like/minimal")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    public ResponseEntity<List<LikeDTO>> getMinimalLikeList(@RequestParam Long userId) {
+        try {
+            List<LikeDTO> likeList = userService.getMinimalLikeList(userId);
+            return ResponseEntity.ok(likeList);
+        } catch (Exception e) {
+            log.error("좋아요 한 것들 중 preferences가 미니멀인 것들 조회 실패: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(List.of());
+        }
+    }
+
+    // 좋아요 한 것들 중 preferences가 모던인 것들 조회
+    @GetMapping("/like/modern")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    public ResponseEntity<List<LikeDTO>> getModernLikeList(@RequestParam Long userId) {
+        try {
+            List<LikeDTO> likeList = userService.getModernLikeList(userId);
+            return ResponseEntity.ok(likeList);
+        } catch (Exception e) {
+            log.error("좋아요 한 것들 중 preferences가 모던인 것들 조회 실패: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(List.of());
+        }
+    }
+
+    // 좋아요 한 것들 중 preferences가 캐주얼인 것들 조회
+    @GetMapping("/like/casual")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    public ResponseEntity<List<LikeDTO>> getCasualLikeList(@RequestParam Long userId) {
+        try {
+            List<LikeDTO> likeList = userService.getCasualLikeList(userId);
+            return ResponseEntity.ok(likeList);
+        } catch (Exception e) {
+            log.error("좋아요 한 것들 중 preferences가 캐주얼인 것들 조회 실패: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(List.of());
+        }
+    }
+
+    // 좋아요 한 것들 중 preferences가 스트릿인 것들 조회
+    @GetMapping("/like/street")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    public ResponseEntity<List<LikeDTO>> getStreetLikeList(@RequestParam Long userId) {
+        try {
+            List<LikeDTO> likeList = userService.getStreetLikeList(userId);
+            return ResponseEntity.ok(likeList);
+        } catch (Exception e) {
+            log.error("좋아요 한 것들 중 preferences가 스트릿인 것들 조회 실패: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(List.of());
+        }
+    }
+
+    // 좋아요 한 것들 중 preferences가 러블리인 것들 조회
+    @GetMapping("/like/romantic")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    public ResponseEntity<List<LikeDTO>> getRomanticLikeList(@RequestParam Long userId) {
+        try {
+            List<LikeDTO> likeList = userService.getRomanticLikeList(userId);
+            return ResponseEntity.ok(likeList);
+        } catch (Exception e) {
+            log.error("좋아요 한 것들 중 preferences가 러블리인 것들 조회 실패: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(List.of());
+        }
+    }
+
+    // 좋아요 한 것들 중 preferences가 럭셔리인 것들 조회
+    @GetMapping("/like/luxury")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    public ResponseEntity<List<LikeDTO>> getLuxuryLikeList(@RequestParam Long userId) {
+        try {
+            List<LikeDTO> likeList = userService.getLuxuryLikeList(userId);
+            return ResponseEntity.ok(likeList);
+        } catch (Exception e) {
+            log.error("좋아요 한 것들 중 preferences가 럭셔리인 것들 조회 실패: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(List.of());
+        }
+    }
+
+  ////////////////////// 여기서부터 날씨+ 좋아요
+  
+
+  //좋아요 한 것들 중 날씨 조건이 더움인 것들 조회
+  @GetMapping("/like/hot")
+  @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+  public ResponseEntity<List<LikeDTO>> getHotLikeList(@RequestParam Long userId) {
+    try {
+      List<LikeDTO> likeList = userService.getHotLikeList(userId);
+      return ResponseEntity.ok(likeList);
+    } catch (Exception e) {
+      log.error("좋아요 한 것들 중 날씨 조건이 더움인 것들 조회 실패: {}", e.getMessage(), e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(List.of());
+    }
+  }
+  
+  //좋아요 한 것들 중 날씨 조건이 따뜻한 것들 조회
+  @GetMapping("/like/warm")
+  @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+  public ResponseEntity<List<LikeDTO>> getWarmLikeList(@RequestParam Long userId) {
+    try {
+      List<LikeDTO> likeList = userService.getWarmLikeList(userId);
+      return ResponseEntity.ok(likeList);
+    } catch (Exception e) {
+      log.error("좋아요 한 것들 중 날씨 조건이 따뜻한 것들 조회 실패: {}", e.getMessage(), e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(List.of());
+    }
+  }
+
+  //좋아요 한 것들 중 날씨 조건이 비인 것들 조회
+  @GetMapping("/like/rain")
+  @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+  public ResponseEntity<List<LikeDTO>> getRainLikeList(@RequestParam Long userId) {
+    try {
+      List<LikeDTO> likeList = userService.getRainLikeList(userId); 
+      return ResponseEntity.ok(likeList);
+    } catch (Exception e) {
+      log.error("좋아요 한 것들 중 날씨 조건이 비인 것들 조회 실패: {}", e.getMessage(), e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(List.of());
+    }
+  }
+
+  //좋아요 한 것들 중 날씨 조건이 추움인 것들 조회
+  @GetMapping("/like/cold")
+  @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+  public ResponseEntity<List<LikeDTO>> getColdLikeList(@RequestParam Long userId) {
+    try {
+      List<LikeDTO> likeList = userService.getColdLikeList(userId);
+      return ResponseEntity.ok(likeList);
+    } catch (Exception e) {
+      log.error("좋아요 한 것들 중 날씨 조건이 추움인 것들 조회 실패: {}", e.getMessage(), e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(List.of());
+    }
+  }
+
+  //좋아요 한 것들 중 날씨 조건이 매우 추움인 것들 조회 
+  @GetMapping("/like/chill")
+  @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+  public ResponseEntity<List<LikeDTO>> getChillLikeList(@RequestParam Long userId) {
+    try {
+      List<LikeDTO> likeList = userService.getChillLikeList(userId);
+      return ResponseEntity.ok(likeList);
+    } catch (Exception e) {
+      log.error("좋아요 한 것들 중 날씨 조건이 매우 추움인 것들 조회 실패: {}", e.getMessage(), e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(List.of());
+    }
+  }
+
+  //좋아요 한 것들 중 날씨 조건이 눈인 것들 조회
+  @GetMapping("/like/snow")
+  @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+  public ResponseEntity<List<LikeDTO>> getSnowLikeList(@RequestParam Long userId) {
+    try {
+      List<LikeDTO> likeList = userService.getSnowLikeList(userId);
+      return ResponseEntity.ok(likeList);
+    } catch (Exception e) {
+      log.error("좋아요 한 것들 중 날씨 조건이 눈인 것들 조회 실패: {}", e.getMessage(), e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(List.of());
+    }
+  }
+
+
+  ///////////////// 여기서 날씨 + TPo
+  
+  // 좋아요 한 것들 중 TPO가 데이트인 것들 조회
+  @GetMapping("/like/date")
+  @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+  public ResponseEntity<List<LikeDTO>> getDateLikeList(@RequestParam Long userId) {
+    try {
+      List<LikeDTO> likeList = userService.getDateLikeList(userId);
+      return ResponseEntity.ok(likeList);
+    } catch (Exception e) {
+      log.error("좋아요 한 것들 중 TPO가 데이트인 것들 조회 실패: {}", e.getMessage(), e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(List.of());
+    }
+  }
+
+   // 좋아요 한 것들 중 TPO가 출근인 것들 조회
+   @GetMapping("/like/work")
+   @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+   public ResponseEntity<List<LikeDTO>> getWorkLikeList(@RequestParam Long userId) {
+    try {
+      List<LikeDTO> likeList = userService.getWorkLikeList(userId);
+      return ResponseEntity.ok(likeList);
+    } catch (Exception e) {
+      log.error("좋아요 한 것들 중 TPO가 출근인 것들 조회 실패: {}", e.getMessage(), e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(List.of());
+    }
+   }
+
+   //좋아요 한 것들 중 TPO가 여행인 것들 조회
+   @GetMapping("/like/travel")
+   @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+   public ResponseEntity<List<LikeDTO>> getTravelLikeList(@RequestParam Long userId) {
+    try {
+      List<LikeDTO> likeList = userService.getTravelLikeList(userId);
+      return ResponseEntity.ok(likeList);
+    } catch (Exception e) {
+      log.error("좋아요 한 것들 중 TPO가 여행인 것들 조회 실패: {}", e.getMessage(), e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(List.of());
+    }
+   }
+
+   //좋아요 한 것들 중 TPO가 운동인 것들 조회
+   @GetMapping("/like/exercise")
+   @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+   public ResponseEntity<List<LikeDTO>> getExerciseLikeList(@RequestParam Long userId) {
+    try {
+      List<LikeDTO> likeList = userService.getExerciseLikeList(userId);
+      return ResponseEntity.ok(likeList);
+    } catch (Exception e) {
+      log.error("좋아요 한 것들 중 TPO가 운동인 것들 조회 실패: {}", e.getMessage(), e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(List.of());
+    }
+   }
+
+   //좋아요 한 것들 중 TPO가 모임인 것들 조회
+   @GetMapping("/like/meeting")
+   @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+   public ResponseEntity<List<LikeDTO>> getMeetingLikeList(@RequestParam Long userId) {
+    try {
+      List<LikeDTO> likeList = userService.getMeetingLikeList(userId);
+      return ResponseEntity.ok(likeList);
+    } catch (Exception e) {
+      log.error("좋아요 한 것들 중 TPO가 모임인 것들 조회 실패: {}", e.getMessage(), e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(List.of());
+    }
+   }
+
+   // 좋아요 한 것들 중 TPO가 일상인 것들 조회
+   @GetMapping("/like/daily")
+   @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+   public ResponseEntity<List<LikeDTO>> getDailyLikeList(@RequestParam Long userId) {
+    try {
+      List<LikeDTO> likeList = userService.getDailyLikeList(userId);
+      return ResponseEntity.ok(likeList);
+    } catch (Exception e) {
+      log.error("좋아요 한 것들 중 TPO가 일상인 것들 조회 실패: {}", e.getMessage(), e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(List.of());
+    }
+   }
+   
 
 
 }
