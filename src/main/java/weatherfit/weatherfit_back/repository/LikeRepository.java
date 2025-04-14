@@ -11,4 +11,5 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     boolean existsByUserAndCoordinate(User user, Coordinate coordinate);
     Optional<Like> findByUserAndCoordinate(User user, Coordinate coordinate);
     List<Like> findByUserId(Long userId);
+    Optional<Like> findByUserIdAndCoordinateId(Long userId, Long coordinateId);
 } 

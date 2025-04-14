@@ -6,7 +6,9 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-
+import lombok.AllArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "coordinate")
@@ -14,14 +16,15 @@ import lombok.NoArgsConstructor;
 @Setter
 @ToString
 @NoArgsConstructor
-
+@AllArgsConstructor
+@Builder
 public class Coordinate {
     @Id
     @Column(name = "coordinate_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "tpo", nullable = false)
+    @Column(name = "tpo", nullable = false, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String tpo;
 
     @Column(name ="weather_condition", nullable = false)
@@ -35,7 +38,12 @@ public class Coordinate {
 
     @Column(name = "targetAgeGroup", nullable = false, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String targetAgeGroup;
- 
+
+    @OneToMany(mappedBy = "coordinate", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Like> likes = new ArrayList<>();
+    
+
     // preference 필드의 getter 메서드 오버라이드
     public String getPreference() {
         System.out.println("Preference 원본 값: " + preference);
@@ -55,18 +63,5 @@ public class Coordinate {
         }
         return targetAgeGroup;
     }
-
-    @Builder
-    public Coordinate(String tpo, String coordinateImg, String targetAgeGroup, String preference, String weatherCondition) {
-        this.tpo = tpo;
-        this.coordinateImg = coordinateImg;
-        this.targetAgeGroup = targetAgeGroup;
-        this.preference = preference;
-        this.weatherCondition = weatherCondition;
-    }
-
-
-    
-   
 }
 

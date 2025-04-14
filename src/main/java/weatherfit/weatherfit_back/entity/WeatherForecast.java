@@ -6,6 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Builder;
 import weatherfit.weatherfit_back.constant.WeatherCondition;
 
+/**
+ * 날씨 예보 정보를 저장하는 엔티티
+ * OpenWeatherMap API의 3시간 단위 예보 데이터를 저장
+ */
 @Entity
 @Table(name = "weather_forecast")
 @Getter
@@ -16,50 +20,56 @@ public class WeatherForecast {
     private Long id;
 
     @Column(name = "forecast_date", nullable = false)
-    private String forecastDate;
+    private String forecastDate;  // YYYY-MM-DD 형식
 
     @Column(name = "forecast_time", nullable = false)
-    private String forecastTime;
+    private String forecastTime;  // HH:MM:SS 형식
 
-    @Column(name = "temp", nullable = false)
-    private double temp;
+    @Column(name = "forecast_temp", nullable = false)
+    private double forecastTemp;  // 현재 기온
 
-    @Column(name = "temp_min", nullable = false)
-    private double tempMin;
+    @Column(name = "forecast_temp_min", nullable = false)
+    private double forecastTempMin;  // 최저 기온
 
-    @Column(name = "temp_max", nullable = false)
-    private double tempMax;
+    @Column(name = "forecast_temp_max", nullable = false)
+    private double forecastTempMax;  // 최고 기온
 
-    @Column(name = "humidity", nullable = false)
-    private int humidity;
+    @Column(name = "forecast_humidity", nullable = false)
+    private int forecastHumidity;  // 습도 (%)
+
+    @Column(name = "forecast_wind_speed", nullable = false)
+    private double forecastWindSpeed;  // 풍속 (m/s)
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "weather_condition", nullable = false)
-    private WeatherCondition weatherCondition;
+    @Column(name = "forecast_weather_condition", nullable = false)
+    private WeatherCondition forecastWeatherCondition;  // 날씨 상태
 
-    @Column(name = "description", nullable = false)
-    private String description;
+    @Column(name = "forecast_description", nullable = false)
+    private String forecastDescription;  // 날씨 설명
 
-    @Column(name = "latitude", nullable = false)
-    private double latitude;
+    @Column(name = "forecast_latitude", nullable = false)
+    private double forecastLatitude;  // 위도
 
-    @Column(name = "longitude", nullable = false)
-    private double longitude;
+    @Column(name = "forecast_longitude", nullable = false)
+    private double forecastLongitude;  // 경도
 
     @Builder
     public WeatherForecast(String forecastDate, String forecastTime, 
-                          double temp, double tempMin, double tempMax,
-                          int humidity, WeatherCondition weatherCondition,
-                          String description, double latitude, double longitude) {
+                          double forecastTemp, double forecastTempMin, double forecastTempMax,
+                          int forecastHumidity, double forecastWindSpeed,
+                          WeatherCondition forecastWeatherCondition, String forecastDescription,
+                          double forecastLatitude, double forecastLongitude) {
         this.forecastDate = forecastDate;
         this.forecastTime = forecastTime;
-        this.temp = temp;
-        this.tempMin = tempMin;
-        this.tempMax = tempMax;
-        this.humidity = humidity;
-        this.weatherCondition = weatherCondition;
-        this.description = description;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.forecastTemp = forecastTemp;
+        this.forecastTempMin = forecastTempMin;
+        this.forecastTempMax = forecastTempMax;
+        this.forecastHumidity = forecastHumidity;
+        this.forecastWindSpeed = forecastWindSpeed;
+        this.forecastWeatherCondition = forecastWeatherCondition;
+        this.forecastDescription = forecastDescription;
+        this.forecastLatitude = forecastLatitude;
+        this.forecastLongitude = forecastLongitude;
+        
     }
 } 

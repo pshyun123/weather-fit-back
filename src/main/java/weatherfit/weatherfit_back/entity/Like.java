@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Builder;
+import lombok.Setter;
 
 @Entity
 @Table(name = "likes")
 @Getter
+@Setter
 @NoArgsConstructor
 public class Like {
     @Id
