@@ -48,17 +48,20 @@ public class WeatherForecast {
     private String forecastDescription;  // 날씨 설명
 
     @Column(name = "forecast_latitude", nullable = false)
-    private double forecastLatitude;  // 위도
+    private float forecastLatitude;  // 위도
 
     @Column(name = "forecast_longitude", nullable = false)
-    private double forecastLongitude;  // 경도
+    private float forecastLongitude;  // 경도
+
+    @Column(name = "forecast_location_name", nullable = false)
+    private String forecastLocationName;  // 위치 이름
 
     @Builder
     public WeatherForecast(String forecastDate, String forecastTime, 
                           double forecastTemp, double forecastTempMin, double forecastTempMax,
                           int forecastHumidity, double forecastWindSpeed,
                           WeatherCondition forecastWeatherCondition, String forecastDescription,
-                          double forecastLatitude, double forecastLongitude) {
+                          float forecastLatitude, float forecastLongitude, String forecastLocationName) {
         this.forecastDate = forecastDate;
         this.forecastTime = forecastTime;
         this.forecastTemp = forecastTemp;
@@ -70,6 +73,6 @@ public class WeatherForecast {
         this.forecastDescription = forecastDescription;
         this.forecastLatitude = forecastLatitude;
         this.forecastLongitude = forecastLongitude;
-        
+        this.forecastLocationName = forecastLocationName;
     }
 } 

@@ -33,7 +33,8 @@ public class WeatherService {
 
     public WeatherDTO getCurrentWeather() {
         try {
-            Weather weather = weatherRepository.findById(1L)  // 현재 날씨 데이터 ID
+            // 가장 최근의 날씨 데이터 조회
+            Weather weather = weatherRepository.findLatestWeather()
                 .orElseThrow(() -> new RuntimeException("날씨 정보를 찾을 수 없습니다."));
             // 성공 메시지 출력
             System.out.println("현재 날씨 정보를 성공적으로 조회했습니다.");
@@ -45,7 +46,7 @@ public class WeatherService {
         }
     }
 
-    // 날씨 예보 조회 3시간 단위로 조회
+    // 날씨 예보 조회 1시간 단위로 조회
     public List<WeatherForecastDTO> getWeatherForecast() {
         try {
             List<WeatherForecast> weatherForecasts = weatherForecastRepository.findAll();

@@ -31,10 +31,10 @@ public class Weather {
     private WeatherCondition weatherCondition;
 
     @Column(name = "latitude", nullable = false)
-    private int latitude;
+    private float latitude;
 
     @Column(name = "longitude", nullable = false)
-    private int longitude;
+    private float longitude;
 
     @Column(name = "weather_date", nullable = false)
     private LocalDateTime weatherDate;
@@ -49,5 +49,8 @@ public class Weather {
     private int currentHumidity;
 
     @Column(name = "current_wind_speed", nullable = false)
-    private double currentWindSpeed;
+    private float currentWindSpeed;
+
+    @Column(name = "location_name", nullable = false)
+    private String locationName;
 }

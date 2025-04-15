@@ -15,13 +15,14 @@ public class WeatherDTO {
     private int minTemp;
     private int maxTemp;
     private WeatherCondition weatherCondition;
-    private int latitude;
-    private int longitude;
+    private float latitude;
+    private float longitude;
     private LocalDateTime weatherDate;
     private String weatherTime;
     private int currentTemp;
     private int currentHumidity;
-    private double currentWindSpeed;
+    private float currentWindSpeed;
+    private String locationName;
 
     public static WeatherDTO of(Weather weather) {
         return WeatherDTO.builder()
@@ -36,6 +37,7 @@ public class WeatherDTO {
                 .currentTemp(weather.getCurrentTemp())
                 .currentHumidity(weather.getCurrentHumidity())
                 .currentWindSpeed(weather.getCurrentWindSpeed())
+                .locationName(weather.getLocationName())
                 .build();
     }
 }

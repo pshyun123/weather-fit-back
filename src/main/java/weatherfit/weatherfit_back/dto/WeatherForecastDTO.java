@@ -20,8 +20,9 @@ public class WeatherForecastDTO {
     private double forecastWindSpeed;
     private WeatherCondition forecastWeatherCondition;
     private String forecastDescription;
-    private double forecastLatitude;
-    private double forecastLongitude;
+    private float forecastLatitude;
+    private float forecastLongitude;
+    private String forecastLocationName;
 
     public static WeatherForecastDTO of(WeatherForecast weatherForecast) {
         return WeatherForecastDTO.builder()
@@ -37,6 +38,7 @@ public class WeatherForecastDTO {
                 .forecastDescription(weatherForecast.getForecastDescription())
                 .forecastLatitude(weatherForecast.getForecastLatitude())
                 .forecastLongitude(weatherForecast.getForecastLongitude())
+                .forecastLocationName(weatherForecast.getForecastLocationName())
                 .build();
     }
 }
