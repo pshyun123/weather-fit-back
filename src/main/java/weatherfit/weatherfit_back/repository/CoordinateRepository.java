@@ -21,4 +21,7 @@ public interface CoordinateRepository extends JpaRepository<Coordinate, Long>  {
     
     @Query("SELECT c FROM Coordinate c JOIN c.likes l WHERE c.weatherCondition = :weatherCondition AND l.user.id = :userId")
     List<Coordinate> findByWeatherConditionAndLikesUserId(@Param("weatherCondition") String weatherCondition, @Param("userId") Long userId);
+
+    @Query("SELECT c FROM Coordinate c JOIN c.likes l WHERE l.user.id = :userId")
+    List<Coordinate> findByLikesUserId(@Param("userId") Long userId);
 }

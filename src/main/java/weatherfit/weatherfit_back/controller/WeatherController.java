@@ -62,6 +62,24 @@ public class WeatherController {
         return ResponseEntity.ok(styles);
     }
 
+    // *현재 날씨 조건과 사용자의 선호 스타일이 같이 존재하는 스타일을 랜덤으로 추천하는 API.
+
+    // @param userId 사용자 ID
+    // @return 현재 날씨 조건과 로그인한 사용자의 선호(preferences)값이이 같이 존재하는 스타일 목록
+    
+    @GetMapping("/styles/current/random")
+    public ResponseEntity<List<CoordinateDTO>> getCurrentWeatherBasedStyles(
+            @RequestParam Long userId) {
+        log.info("현재 날씨 기반 랜덤 스타일 추천 요청: {}", userId);
+        List<CoordinateDTO> styles = weatherService.getCurrentWeatherBasedStyles(userId);
+        return ResponseEntity.ok(styles);
+    }
+
+
+    
+
+
+
     /**
      * 특정 날씨 조건에서 사용자가 좋아요한 스타일을 조회하는 API
      * GET /weather/styles/{weatherCondition}/likes
@@ -79,23 +97,23 @@ public class WeatherController {
         return ResponseEntity.ok(likes);
     }
 
-    /**
-     * 스타일 좋아요를 토글(추가/삭제)하는 API
-     * POST /weather/styles/{weatherCondition}/{styleId}/like
-     * 
-     * @param weatherCondition 날씨 조건 (맑음, 비, 눈 등)
-     * @param styleId 스타일 ID
-     * @param userId 사용자 ID
-     * @return 좋아요 토글 결과 메시지
-     */
-    @PostMapping("/styles/{weatherCondition}/{styleId}/like")
-    public ResponseEntity<String> toggleWeatherStyleLike(
-            @PathVariable String weatherCondition,
-            @PathVariable Long styleId,
-            @RequestParam Long userId) {
-        log.info("날씨 기반 스타일 좋아요 토글 요청: {}, styleId: {}, userId: {}", 
-                weatherCondition, styleId, userId);
-        String result = weatherService.toggleWeatherStyleLike(weatherCondition, styleId, userId);
-        return ResponseEntity.ok(result);
-    }
+    // /**
+    //  * 스타일 좋아요를 토글(추가/삭제)하는 API
+    //  * POST /weather/styles/{weatherCondition}/{styleId}/like
+    //  * 
+    //  * @param weatherCondition 날씨 조건 (맑음, 비, 눈 등)
+    //  * @param styleId 스타일 ID
+    //  * @param userId 사용자 ID
+    //  * @return 좋아요 토글 결과 메시지
+    //  */
+    // @PostMapping("/styles/{weatherCondition}/{styleId}/like")
+    // public ResponseEntity<String> toggleWeatherStyleLike(
+    //         @PathVariable String weatherCondition,
+    //         @PathVariable Long styleId,
+    //         @RequestParam Long userId) {
+    //     log.info("날씨 기반 스타일 좋아요 토글 요청: {}, styleId: {}, userId: {}", 
+    //             weatherCondition, styleId, userId);
+    //     String result = weatherService.toggleWeatherStyleLike(weatherCondition, styleId, userId);
+    //     return ResponseEntity.ok(result);
+    // }
 }

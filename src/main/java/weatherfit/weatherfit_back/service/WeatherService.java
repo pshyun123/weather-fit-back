@@ -70,6 +70,24 @@ public class WeatherService {
                 .collect(Collectors.toList());
     }
 
+    // 현재 날씨 조건과 사용자의 선호 스타일이 같이 존재하는 스타일을 랜덤으로 추천하는 API.
+    public List<CoordinateDTO> getCurrentWeatherBasedStyles(Long userId) {
+        log.info("현재 날씨 기반 랜덤 스타일 추천 서비스 호출: {}", userId);
+        
+        // 현재 날씨 조건 조회
+        Weather currentWeather = weatherRepository.findLatestWeather()
+                .orElseThrow(() -> new RuntimeException("현재 날씨 정보를 찾을 수 없습니다."));
+        
+        String weatherCondition = currentWeather.getWeatherCondition().name();
+        log.info("현재 날씨 조건: {}", weatherCondition);
+        
+        return coordinateRepository.findByWeatherConditionAndLikesUserId(weatherCondition, userId)
+                .stream()
+                .map(CoordinateDTO::from)
+                .collect(Collectors.toList());
+    }
+
+
     public List<CoordinateDTO> getWeatherBasedLikes(String weatherCondition, Long userId) {
         log.info("날씨 기반 좋아요 스타일 서비스 호출: {}, userId: {}", weatherCondition, userId);
         return coordinateRepository.findByWeatherConditionAndLikesUserId(weatherCondition, userId)

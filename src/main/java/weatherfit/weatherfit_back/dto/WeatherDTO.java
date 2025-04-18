@@ -40,4 +40,12 @@ public class WeatherDTO {
                 .locationName(weather.getLocationName())
                 .build();
     }
+
+    public static WeatherDTO from(Weather weather) {
+        return WeatherDTO.builder()
+                .id(weather.getId())
+                .weatherCondition(weather.getWeatherCondition())
+                .build();
+    }
+    
 }

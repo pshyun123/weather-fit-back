@@ -22,5 +22,8 @@ public interface WeatherRepository extends JpaRepository<Weather, Long> {
         List<Weather> weathers = findAllOrderByDateDesc();
         return weathers.isEmpty() ? Optional.empty() : Optional.of(weathers.get(0));
     }
+
+
+
 }
 
