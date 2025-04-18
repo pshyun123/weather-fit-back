@@ -69,9 +69,9 @@ public class WeatherController {
     
     @GetMapping("/styles/current/random")
     public ResponseEntity<List<CoordinateDTO>> getCurrentWeatherBasedStyles(
-            @RequestParam Long userId) {
-        log.info("현재 날씨 기반 랜덤 스타일 추천 요청: {}", userId);
-        List<CoordinateDTO> styles = weatherService.getCurrentWeatherBasedStyles(userId);
+            @RequestParam String email) {
+        log.info("현재 날씨 기반 랜덤 스타일 추천 요청: {}", email);
+        List<CoordinateDTO> styles = weatherService.getCurrentWeatherBasedStyles(email);
         return ResponseEntity.ok(styles);
     }
 
@@ -91,9 +91,9 @@ public class WeatherController {
     @GetMapping("/styles/{weatherCondition}/likes")
     public ResponseEntity<List<CoordinateDTO>> getWeatherBasedLikes(
             @PathVariable String weatherCondition,
-            @RequestParam Long userId) {
-        log.info("날씨 기반 좋아요 스타일 요청: {}, userId: {}", weatherCondition, userId);
-        List<CoordinateDTO> likes = weatherService.getWeatherBasedLikes(weatherCondition, userId);
+            @RequestParam String email) {
+        log.info("날씨 기반 좋아요 스타일 요청: {}, email: {}", weatherCondition, email);
+        List<CoordinateDTO> likes = weatherService.getWeatherBasedLikes(weatherCondition, email);
         return ResponseEntity.ok(likes);
     }
 

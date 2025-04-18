@@ -20,9 +20,9 @@ public class UserResDTO {
 
     public static UserResDTO of(User user) {
         return UserResDTO.builder()
+                .id(user.getId())
                 .email(user.getEmail())
                 .password(user.getPassword())
-                
                 .name(user.getName())
                 .ageGroup(user.getAgeGroup())
                 .profileImage(user.getProfileImage())
