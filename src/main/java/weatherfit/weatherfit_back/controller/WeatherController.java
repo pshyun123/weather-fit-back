@@ -62,11 +62,7 @@ public class WeatherController {
         return ResponseEntity.ok(styles);
     }
 
-    // *현재 날씨 조건과 사용자의 선호 스타일이 같이 존재하는 스타일을 랜덤으로 추천하는 API.
-
-    // @param userId 사용자 ID
-    // @return 현재 날씨 조건과 로그인한 사용자의 선호(preferences)값이이 같이 존재하는 스타일 목록
-    
+    // *현재 weather_condition과 일치하는 스타일 목록 중 현재 로그인한 사용자의 preferences값이 존재하는 값들만을 랜덤하게 조회하는 API
     @GetMapping("/styles/current/random")
     public ResponseEntity<List<CoordinateDTO>> getCurrentWeatherBasedStyles(
             @RequestParam String email) {
@@ -74,6 +70,9 @@ public class WeatherController {
         List<CoordinateDTO> styles = weatherService.getCurrentWeatherBasedStyles(email);
         return ResponseEntity.ok(styles);
     }
+
+
+   
 
 
     

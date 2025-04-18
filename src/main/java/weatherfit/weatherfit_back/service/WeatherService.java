@@ -15,10 +15,13 @@ import weatherfit.weatherfit_back.repository.CoordinateRepository;
 import weatherfit.weatherfit_back.repository.LikeRepository;
 import weatherfit.weatherfit_back.entity.Like;
 import weatherfit.weatherfit_back.repository.UserRepository;
+import weatherfit.weatherfit_back.entity.Coordinate;
+import weatherfit.weatherfit_back.entity.User;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Optional;
+import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -70,19 +73,27 @@ public class WeatherService {
                 .collect(Collectors.toList());
     }
 
-    // 현재 날씨 조건과 사용자의 선호 스타일이 같이 존재하는 스타일을 랜덤으로 추천하는 API.
+    // *현재 weather_condition과 일치하는 스타일 목록 중 현재 로그인한 사용자의 preferences값이 존재하는 값들만을 랜덤하게 조회하는 API
+    
     public List<CoordinateDTO> getCurrentWeatherBasedStyles(String email) {
-        log.info("현재 날씨 기반 랜덤 스타일 추천 서비스 호출: {}", email);
-        
-        // 현재 날씨 조건 조회
-        Weather currentWeather = weatherRepository.findLatestWeather()
-                .orElseThrow(() -> new RuntimeException("현재 날씨 정보를 찾을 수 없습니다."));
-        
-        String weatherCondition = currentWeather.getWeatherCondition().name();
-        log.info("현재 날씨 조건: {}", weatherCondition);
-        
-        return coordinateRepository.findByWeatherConditionAndLikesUserId(weatherCondition, email)
-                .stream()
+        WeatherDTO currentWeather = getCurrentWeather();
+        String currentWeatherCondition = currentWeather.getWeatherCondition().name();
+        log.info("현재 날씨 기반 스타일 추천 서비스 호출: {}", email);
+        log.info("현재 날씨 정보: {}", currentWeather);
+
+        // 현재 날씨 조건과 정확히 일치하는 스타일 조회
+        List<Coordinate> styles = coordinateRepository.findByWeatherCondition(currentWeatherCondition);
+        log.info("현재 날씨 조건({})과 일치하는 스타일 수: {}", currentWeatherCondition, styles.size());
+
+        if (styles.isEmpty()) {
+            log.info("현재 날씨 조건({})과 일치하는 스타일이 없습니다.", currentWeatherCondition);
+        }
+
+        // 스타일 리스트를 랜덤하게 섞기
+        Collections.shuffle(styles);
+        log.info("스타일 리스트를 랜덤하게 섞었습니다.");
+
+        return styles.stream()
                 .map(CoordinateDTO::from)
                 .collect(Collectors.toList());
     }
