@@ -104,7 +104,79 @@ public class CoordinateService {
     }
 
 
+    /////////
     
 
+    //착장 정보 중 tpo 컬럼 조회
+    public List<String> getTpoList() {
+        return coordinateRepository.findAll().stream()
+            .map(Coordinate::getTpo)
+            .distinct()
+            .collect(Collectors.toList());
+    }
+
+    //착장 정보 중 tpo 컬럼 중 daily의 coordinateImg 조회
+    public List<CoordinateDTO> getDailyTpoList() {
+        return coordinateRepository.findAll().stream()
+            .filter(coordinate -> "daily".equals(coordinate.getTpo()))
+            .map(CoordinateDTO::of)
+            .collect(Collectors.toList());
+    }
+
+    //착장 정보 중 tpo 컬럼 중 meeting의 coordinateImg 조회
+    public List<CoordinateDTO> getMeetingTpoList() {
+        return coordinateRepository.findAll().stream()
+            .filter(coordinate -> "meeting".equals(coordinate.getTpo()))
+            .map(CoordinateDTO::of)
+            .collect(Collectors.toList());
+    }
+
+    //착장 정보 중 tpo 컬럼 중 date의 coordinateImg 조회
+    public List<CoordinateDTO> getDateTpoList() {
+        return coordinateRepository.findAll().stream()
+            .filter(coordinate -> "date".equals(coordinate.getTpo()))
+            .map(CoordinateDTO::of)
+            .collect(Collectors.toList());
+    }
+
+    //착장 정보 중 tpo 컬럼 중 exercise의 coordinateImg 조회
+    public List<CoordinateDTO> getExerciseTpoList() {
+        return coordinateRepository.findAll().stream()
+            .filter(coordinate -> "exercise".equals(coordinate.getTpo()))
+            .map(CoordinateDTO::of)
+            .collect(Collectors.toList());
+    }
+
+    //착장 정보 중 tpo 컬럼 중 work의 coordinateImg 조회
+    public List<CoordinateDTO> getWorkTpoList() {
+        return coordinateRepository.findAll().stream()
+            .filter(coordinate -> "work".equals(coordinate.getTpo()))
+            .map(CoordinateDTO::of)
+            .collect(Collectors.toList());
+    }
+
+    //착장 정보 중 tpo 컬럼 중 party의 coordinateImg 조회
+    public List<CoordinateDTO> getPartyTpoList() {
+        return coordinateRepository.findAll().stream()
+            .filter(coordinate -> "party".equals(coordinate.getTpo()))
+            .map(CoordinateDTO::of)
+            .collect(Collectors.toList());
+    }
+
+    //착장 정보 중 tpo 컬럼 중 travel의 coordinateImg 조회
+    public List<CoordinateDTO> getTravelTpoList() {
+        return coordinateRepository.findAll().stream()
+            .filter(coordinate -> "travel".equals(coordinate.getTpo()))
+            .map(CoordinateDTO::of)
+            .collect(Collectors.toList());
+    }
+
+    //착장 정보 중 tpo 컬럼 중 wedding의 coordinateImg 조회
+    public List<CoordinateDTO> getWeddingTpoList() {
+        return coordinateRepository.findAll().stream()
+            .filter(coordinate -> "wedding".equals(coordinate.getTpo()))
+            .map(CoordinateDTO::of)
+            .collect(Collectors.toList());
+    }
 }
 

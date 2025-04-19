@@ -16,7 +16,7 @@ import weatherfit.weatherfit_back.repository.LikeRepository;
 import weatherfit.weatherfit_back.entity.Like;
 import weatherfit.weatherfit_back.repository.UserRepository;
 import weatherfit.weatherfit_back.entity.Coordinate;
-import weatherfit.weatherfit_back.entity.User;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
